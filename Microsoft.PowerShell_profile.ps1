@@ -1,12 +1,13 @@
-# Load posh-git example profile
-. 'C:\Users\bas\Documents\WindowsPowerShell\Modules\posh-git\profile.example.ps1'
-
+if (-not (Test-Path env:INSIDE_EMACS)) {
+    # Load posh-git example profile
+    . 'C:\Users\bas\Documents\WindowsPowerShell\Modules\posh-git\profile.example.ps1'
+}
 $HistoryFilePath = Join-Path ([Environment]::GetFolderPath('UserProfile')) .ps_history
 Register-EngineEvent PowerShell.Exiting -Action { Get-History | Export-Clixml $HistoryFilePath } | out-null
 if (Test-path $HistoryFilePath) { Import-Clixml $HistoryFilePath | Add-History }
 
 function Get-LastTag {
-    git tag --sort=committerdate | Select -Last 1
+    git tag --sort=committerdate | Select-Object -Last 1
 }
 
 New-Alias -name lasttag -Value Get-LastTag
@@ -102,6 +103,21 @@ function Get-Batchfile ($file) {
     }
 }
 
-$BatchFile = "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat"
+$BatchFile = "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
 Get-Batchfile $BatchFile
 [System.Console]::Title = "Visual Studio 2017 Windows Powershell"
+
+function Invoke-FetchAll() {
+    $paths = @("C:\Divv", "C:\DivverenceReleases")
+    $paths | ForEach-Object {
+        Get-ChildItem -rec -force -Path $_ | Where-Object {
+            $_.PSIsContainer -and $_.Name -eq ".git"
+        }  | ForEach-Object {
+            Push-Location $_.PsParentPath
+            git fetch --all
+            Pop-Location
+        }
+    }
+}
+
+New-Alias -Name ifa -Value Invoke-FetchAll
