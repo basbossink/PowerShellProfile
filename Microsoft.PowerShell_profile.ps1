@@ -103,10 +103,6 @@ function Get-Batchfile ($file) {
     }
 }
 
-$BatchFile = "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
-Get-Batchfile $BatchFile
-[System.Console]::Title = "Visual Studio 2017 Windows Powershell"
-
 function Invoke-FetchAll() {
     $paths = @("C:\Divv", "C:\DivverenceReleases")
     $paths | ForEach-Object {
