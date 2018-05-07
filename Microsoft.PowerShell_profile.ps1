@@ -1,13 +1,3 @@
-# Add both [Git]/cmd/ and [Git]/usr/bin/ to PATH.
-# This ensures access to git, and all other tools provided by Git for Windows (e.g. ssh)
-# Optionally, you could simply add these to your system's PATH environment variable instead.
-$Env:Path = "$Env:ProgramFiles\Git\cmd" + ";" + "$Env:ProgramFiles\Git\usr\bin" + ";" + $Env:Path
-
-# Remove default Powershell Aliases for any Git Bash tools/scripts we want to use (feel free to add to list)
-# (Otherwise, these default PowerShell aliases are used, even if Git Bash tools are first in PATH)
-Remove-Item Alias:cp
-Remove-Item Alias:mv
-
 if (-not (Test-Path env:INSIDE_EMACS)) {
     # Load posh-git example profile
     Import-Module "C:\Users\bas\Documents\WindowsPowerShell\Modules\posh-git"
@@ -23,10 +13,9 @@ if (-not (Test-Path env:INSIDE_EMACS)) {
     }
 
     # Start posh-git's SSH Agent.
+    Set-Alias ssh-agent "$env:ProgramFiles\git\usr\bin\ssh-agent.exe"
+    Set-Alias ssh-add "$env:ProgramFiles\git\usr\bin\ssh-add.exe"
     Start-SshAgent -Quiet
-
-    # Add default SSH keys (e.g. ~/.ssh/id_rsa)
-    Add-SshKey
 }
 
 $HistoryFilePath = Join-Path ([Environment]::GetFolderPath('UserProfile')) .ps_history
