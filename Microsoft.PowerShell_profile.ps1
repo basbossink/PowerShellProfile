@@ -119,6 +119,7 @@ function Get-Batchfile ($file) {
     }
 }
 
+
 function Invoke-FetchAll() {
     $paths = @("C:\Divv", "C:\DivverenceReleases")
     $paths | ForEach-Object {
@@ -133,3 +134,14 @@ function Invoke-FetchAll() {
 }
 
 New-Alias -Name ifa -Value Invoke-FetchAll
+
+
+function Get-VlowGraphAsSvg($baseUrl) {
+    $mermaidTxt = Join-Path $env:TEMP graph.txt
+    invoke-webrequest -Uri "$($baseUrl)Graph/Mermaid/Full" -outfile $mermaidTxt
+    mmdc.cmd -C C:\Divv\Vlow\Support.Web\src\Support.Web\wwwroot\CSS\divv-page.css -i $mermaidTxt
+    $svgUri = "file:///" + "$($mermaidTxt).svg" -replace '\\','/'
+    C:\Users\bas\PortableApps\PortableApps\GoogleChromePortable\GoogleChromePortable.exe $svgUri
+}
+
+New-Alias -Name vlowg -Value Get-VlowGraphAsSvg
