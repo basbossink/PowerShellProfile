@@ -123,11 +123,18 @@ function Get-Batchfile ($file) {
 function Invoke-FetchAll() {
     $paths = @("C:\Divv", "C:\DivverenceReleases")
     $paths | ForEach-Object {
-        Get-ChildItem -rec -force -Path $_ | Where-Object {
-            $_.PSIsContainer -and $_.Name -eq ".git"
+        Get-ChildItem -rec -force -Path $_ -Directory | Where-Object {
+            $_.Name -eq ".git"
         }  | ForEach-Object {
-            Push-Location $_.PsParentPath
-            git fetch --all
+            $repoDir = $_.Parent.FullName
+            Push-Location $repoDir
+            git fetch --all --prune --prune-tags --verbose --progress
+            if(-not $?) {
+                Write-host "There was a problem fetching the git repo in $($repoDir)." -ForegroundColor Red
+            }
+            git merge --ff-only
+            git submodule update
+            dotnet restore
             Pop-Location
         }
     }
@@ -135,13 +142,21 @@ function Invoke-FetchAll() {
 
 New-Alias -Name ifa -Value Invoke-FetchAll
 
+function ConvertTo-FileUrl($path) {
+    $fi = Get-Item $path
+    ("file:///" + $fi.FullName) -replace '\\','/'
+}
+
+New-Alias -Name cfu -Value ConvertTo-FileUrl
+
+New-Alias -Name chrome -Value C:\Users\bas\PortableApps\PortableApps\GoogleChromePortable\GoogleChromePortable.exe
 
 function Get-VlowGraphAsSvg($baseUrl) {
     $mermaidTxt = Join-Path $env:TEMP graph.txt
     invoke-webrequest -Uri "$($baseUrl)Graph/Mermaid/Full" -outfile $mermaidTxt
     mmdc.cmd -C C:\Divv\Vlow\Support.Web\src\Support.Web\wwwroot\CSS\divv-page.css -i $mermaidTxt
-    $svgUri = "file:///" + "$($mermaidTxt).svg" -replace '\\','/'
-    C:\Users\bas\PortableApps\PortableApps\GoogleChromePortable\GoogleChromePortable.exe $svgUri
+    $svgUri = ConvertTo-FileUrl "$($mermaidTxt).svg"
+    chrome $svgUri
 }
 
 New-Alias -Name vlowg -Value Get-VlowGraphAsSvg
