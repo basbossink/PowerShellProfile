@@ -120,21 +120,45 @@ function Get-Batchfile ($file) {
 }
 
 
+function Update-Branch($branchName) {
+    git merge-base --is-ancestor origin/${branchName} ${branchName}
+    if($?) {
+        git fetch origin ${branchName}:${branchName}
+    }
+}
+
+function Get-BranchExists($branchName) {
+    git rev-parse --quiet --verify $branchName | Out-Null
+    $?
+}
+
 function Invoke-FetchAll() {
     $paths = @("C:\Divv", "C:\DivverenceReleases")
     $paths | ForEach-Object {
         Get-ChildItem -rec -force -Path $_ -Directory | Where-Object {
             $_.Name -eq ".git"
-        }  | ForEach-Object {
+        } | ForEach-Object {
             $repoDir = $_.Parent.FullName
             Push-Location $repoDir
-            git fetch --all --prune --prune-tags --verbose --progress
+            Write-Host "Updating $($repoDir)."
+            git fetch --all
             if(-not $?) {
                 Write-host "There was a problem fetching the git repo in $($repoDir)." -ForegroundColor Red
             }
+            $branchesToFf = @("master", "develop") 
+            $currentBranch = git rev-parse --abbrev-ref HEAD
             git merge --ff-only
-            git submodule update
-            dotnet restore
+            foreach($branch in $branchesToFf) {
+                if($branch -ne $currentBranch -and (Get-BranchExists origin/$branch) -and (Get-BranchExists $branch)) {
+                    Update-Branch $branch
+                }
+            }
+            if(Test-Path build) {
+                git submodule update
+            }
+            if (Test-Path *.sln) {
+                dotnet restore
+            }
             Pop-Location
         }
     }
