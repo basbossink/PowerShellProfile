@@ -184,3 +184,8 @@ function Get-VlowGraphAsSvg($baseUrl) {
 }
 
 New-Alias -Name vlowg -Value Get-VlowGraphAsSvg
+
+$env:BITBUCKET_USERNAME = "basbossinkdivverence"
+$securePassword = Get-Content ~\.creds\bitbucket-app-pwd.txt | ConvertTo-SecureString
+$credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "dummyUsername", $securePassword
+$env:BITBUCKET_APP_PASSWORD = $credential.GetNetworkCredential().Password
