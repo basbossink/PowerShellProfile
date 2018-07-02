@@ -1,6 +1,6 @@
 if (-not (Test-Path env:INSIDE_EMACS)) {
     # Load posh-git example profile
-    Import-Module "C:\Users\bas\Documents\WindowsPowerShell\Modules\posh-git"
+    Import-Module "C:\tools\poshgit\dahlbyk-posh-git-9bda399\src\posh-git"
     function global:prompt {
         $realLASTEXITCODE = $LASTEXITCODE
 
@@ -13,8 +13,8 @@ if (-not (Test-Path env:INSIDE_EMACS)) {
     }
 
     # Start posh-git's SSH Agent.
-    Set-Alias ssh-agent "$env:ProgramFiles\git\usr\bin\ssh-agent.exe"
-    Set-Alias ssh-add "$env:ProgramFiles\git\usr\bin\ssh-add.exe"
+    Set-Alias ssh-agent "C:\Program Files\git\usr\bin\ssh-agent.exe"
+    Set-Alias ssh-add "C:\Program Files\git\usr\bin\ssh-add.exe"
     Start-SshAgent -Quiet
 }
 
@@ -145,7 +145,7 @@ function Invoke-FetchAll() {
             if(-not $?) {
                 Write-host "There was a problem fetching the git repo in $($repoDir)." -ForegroundColor Red
             }
-            $branchesToFf = @("master", "develop") 
+            $branchesToFf = @("master", "develop")
             $currentBranch = git rev-parse --abbrev-ref HEAD
             git merge --ff-only
             foreach($branch in $branchesToFf) {
