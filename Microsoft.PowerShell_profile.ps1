@@ -198,3 +198,29 @@ function Update-RollingNugetPackages() {
 }
 
 New-Alias -Name rollf -Value Update-RollingNugetPackages
+
+function Get-PackageReference {
+    rg -g *.csproj '<PackageReference\s+Include=\"([^\"]+)\"\s+Version=\"([^\"]+)\"\s*/>' -r '$1 : $2'
+}
+
+New-Alias -Name gpr -Value Get-PackageReference
+
+function Find-ProjectAsset([string] $searchTerm) {
+    rg -u -g project.assets.json $searchTerm
+}
+
+New-Alias -Name fpa -Value Find-ProjectAsset
+
+function Replace-PackageVersion([string]$from, [string]$to) {
+    fart -r *.csproj $from $to
+}
+
+New-Alias -Name rpv -Value Replace-PackageVersion
+
+function Find-PackageVersion([string]$version) {
+    fart -r *.csproj $version
+}
+
+New-Alias -Name fpv Find-PackageVersion
+
+$env:ERL_AFLAGS="-kernel shell_history enabled"
