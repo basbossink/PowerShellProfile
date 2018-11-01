@@ -68,11 +68,15 @@ function Parse-LedgerTime([string] $line) {
 }
 
 function Format-TimeSpan([TimeSpan] $timeSpan) {
+    $days = "{0:dd}" -f $timeSpan
     $hours = "{0:hh}" -f $timeSpan
     $mins = "{0:mm}" -f $timeSpan
     $timeSpanString = ""
     if ($timeSpan.TotalMinutes -lt 0) {
         $timeSpanString += "-"
+    }
+    if([Math]::Abs($timeSpan.TotalDays) -ge 1) {
+        $timeSpanString += "$days days "    
     }
     if (1 -le [Math]::Abs($timeSpan.TotalHours)) {
         $timeSpanString += "$hours hours "
@@ -98,7 +102,7 @@ function Show-Overtime($end = ((Get-Date) + [TimeSpan]::FromDays(1))) {
     if ((Get-Date).Hour -lt 13) {
         $leaveTime = $leaveTime.AddHours(0.5)
     }
-    $toWorkString = Format-TimeSpan $toWork
+    $toWorkString = Format-TimeSpan $toWork #"$([Math]::Floor($toWork.TotalHours)) hours $($toWork.Minutes) minutes"
     $toWorkTillEightString = Format-TimeSpan $toWorkTillEight
     $workedTodayString = Format-TimeSpan $workedToday
     "" |Select-Object -Property @{Name="No.Work days";Expression={$workDays}},
@@ -106,7 +110,7 @@ function Show-Overtime($end = ((Get-Date) + [TimeSpan]::FromDays(1))) {
     @{Name="Worked today"; Expression={$workedTodayString}},
     @{Name="Still to work today"; Expression={$toWorkString}},
     @{Name="Still to work today (8hrs)"; Expression={$toWorkTillEightString}},
-    @{Name="Time to leave";Expression={"{0:HH:mm}" -f $leaveTime}},
+    @{Name="Time to leave";Expression={"{0:yyyy-MM-dd HH:mm}" -f $leaveTime}},
     @{Name="Time to leave (8hrs today)";Expression={"{0:HH:mm}" -f $leaveTimeEight}} | Format-List
 }
 
@@ -224,3 +228,8 @@ function Find-PackageVersion([string]$version) {
 New-Alias -Name fpv Find-PackageVersion
 
 $env:ERL_AFLAGS="-kernel shell_history enabled"
+
+$emacs = Get-Process emacs -ErrorAction SilentlyContinue
+if(!$emacs) {
+    Start-Process -WorkingDirectory $env:USERPROFILE runemacs.exe
+}
