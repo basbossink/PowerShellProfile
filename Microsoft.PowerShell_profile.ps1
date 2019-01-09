@@ -76,7 +76,7 @@ function Format-TimeSpan([TimeSpan] $timeSpan) {
         $timeSpanString += "-"
     }
     if([Math]::Abs($timeSpan.TotalDays) -ge 1) {
-        $timeSpanString += "$days days "    
+        $timeSpanString += "$days days "
     }
     if (1 -le [Math]::Abs($timeSpan.TotalHours)) {
         $timeSpanString += "$hours hours "
@@ -226,6 +226,15 @@ function Find-PackageVersion([string]$version) {
 }
 
 New-Alias -Name fpv Find-PackageVersion
+
+function New-PositivityRatioGraph() {
+    $journalDir = Join-Path $env:HOME "Dropbox\Personal\journals\"
+    Push-Location $journalDir
+    & "C:\Program Files\R\R-3.5.1\bin\Rscript.exe" "positivity.r" 2>&1 | Out-Null
+    Pop-Location
+}
+
+New-Alias -Name nprg New-PositivityRatioGraph
 
 $env:ERL_AFLAGS="-kernel shell_history enabled"
 
