@@ -230,15 +230,37 @@ New-Alias -Name fpv Find-PackageVersion
 function New-PositivityRatioGraph() {
     $journalDir = Join-Path $env:HOME "Dropbox\Personal\journals\"
     Push-Location $journalDir
-    & "C:\Program Files\R\R-3.5.1\bin\Rscript.exe" "positivity.r" 2>&1 | Out-Null
+    & "C:\Program Files\R\R-3.5.3\bin\Rscript.exe" "positivity.r" 2>&1 | Out-Null
     Pop-Location
 }
 
 New-Alias -Name nprg New-PositivityRatioGraph
 
 $env:ERL_AFLAGS="-kernel shell_history enabled"
+$env:JIRA_API_TOKEN="N59n9EWNFUkjXhSy2tEV6580"
 
 $emacs = Get-Process emacs -ErrorAction SilentlyContinue
 if(!$emacs) {
     Start-Process -WorkingDirectory $env:USERPROFILE runemacs.exe
+}
+
+function Get-DivDevTimeSpent() {
+    Show-PunchClock --period 'last week' bal DIVDEV |
+      Where-Object { $_ -match "DIVDEV" } |
+      ForEach-Object { $split=$_.Split(@(" "), [StringSplitOptions]::RemoveEmptyEntries); $work=$split[0].Trim();$issue=$split[1].Trim(); New-Object -type PSCustomObject -Property @{Issue=$issue; Worked=$work }}
+}
+
+function Get-PortListeners() {
+    Get-NetTCPConnection -state Listen |
+      Select-Object @{Name="Program";Expression={Get-process -Id $_.OwningProcess|Select-Object -ExpandProperty Name}},LocalPort|
+      Sort-Object Program,LocalPort|
+      Format-Table -AutoSize
+}
+
+if((Get-Service w32time).Status -ne "Running") {
+	Start-Service w32time
+}
+
+function Set-TimeToNtp() {
+	Start-Process -wait -windowstyle hidden -Verb RunAs W32tm -argumentlist "/resync", "/force"
 }
