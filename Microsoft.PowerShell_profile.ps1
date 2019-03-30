@@ -138,7 +138,7 @@ function Get-BranchExists($branchName) {
 }
 
 function Invoke-FetchAll() {
-    $paths = @("C:\Divv", "C:\DivverenceReleases")
+    $paths = @("F:")
     $paths | ForEach-Object {
         Get-ChildItem -rec -force -Path $_ -Directory | Where-Object {
             $_.Name -eq ".git"
@@ -183,7 +183,7 @@ New-Alias -Name chrome -Value C:\Users\bas\PortableApps\PortableApps\GoogleChrom
 function Get-VlowGraphAsSvg($baseUrl) {
     $mermaidTxt = Join-Path $env:TEMP graph.txt
     invoke-webrequest -Uri "$($baseUrl)Graph/Mermaid/Full" -outfile $mermaidTxt
-    mmdc.cmd -C C:\Divv\Vlow\Support.Web\src\Support.Web\wwwroot\CSS\divv-page.css -i $mermaidTxt
+    mmdc.cmd -C F:\Vlow\Support.Web\src\Support.Web\wwwroot\CSS\divv-page.css -i $mermaidTxt
     $svgUri = ConvertTo-FileUrl "$($mermaidTxt).svg"
     chrome $svgUri
 }
