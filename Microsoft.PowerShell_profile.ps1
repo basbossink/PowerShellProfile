@@ -262,4 +262,10 @@ if(!$powershell) {
     Start-Process powershell -verb RunAs
 }
 
+function Update-DotNetGlobalTools() {
+    dotnet tool list -g | Select-Object -skip 3 |
+      ForEach-Object { ($_ -split ' ')[0] } |
+      ForEach-Object { dotnet tool update --global $_ }
 }
+
+New-Alias -Name udngt Update-DotNetGlobalTools
