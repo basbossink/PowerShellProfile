@@ -29,21 +29,21 @@ function Get-LastTag {
 New-Alias -name lasttag -Value Get-LastTag
 
 function Invoke-Emacs {
-    C:\Users\bas\PortableApps\emacs\bin\emacsclientw.exe $args
+    F:\PortableApps\emacs\bin\emacsclientw.exe $args
 }
 
 function Invoke-NanoEmacs {
-    C:\Users\bas\PortableApps\microemacs\ne32.exe $args
+    F:\PortableApps\microemacs\ne32.exe $args
 }
 New-Alias -Name edit -Value Invoke-Emacs
 
 function Invoke-Notepad2 {
-    C:\Users\bas\PortableApps\PortableApps\Notepad2-modPortable\Notepad2-modPortable.exe $args
+    F:\PortableApps\PortableApps\Notepad2-modPortable\Notepad2-modPortable.exe $args
 }
 New-Alias -Name np2 -Value Invoke-Notepad2
 
 function Show-PunchClock {
-    ledger.exe -f ~/Dropbox/Personal/journals/timelog --date-format "%Y-%m-%d" --no-color $args
+    ledger.exe -f F:\Dropbox\Personal\journals\timelog --date-format "%Y-%m-%d" --no-color $args
 }
 
 New-Alias -Name punch -Value Show-PunchClock
@@ -178,7 +178,7 @@ function ConvertTo-FileUrl($path) {
 
 New-Alias -Name cfu -Value ConvertTo-FileUrl
 
-New-Alias -Name chrome -Value C:\Users\bas\PortableApps\PortableApps\GoogleChromePortable\GoogleChromePortable.exe
+New-Alias -Name chrome -Value F:\PortableApps\PortableApps\GoogleChromePortable\GoogleChromePortable.exe
 
 function Get-VlowGraphAsSvg($baseUrl) {
     $mermaidTxt = Join-Path $env:TEMP graph.txt
@@ -257,10 +257,9 @@ function Get-PortListeners() {
       Format-Table -AutoSize
 }
 
-if((Get-Service w32time).Status -ne "Running") {
-	Start-Service w32time
+$powershell = Get-Process powershell -ErrorAction SilentlyContinue
+if(!$powershell) {
+    Start-Process powershell -verb RunAs
 }
 
-function Set-TimeToNtp() {
-	Start-Process -wait -windowstyle hidden -Verb RunAs W32tm -argumentlist "/resync", "/force"
 }
