@@ -182,7 +182,7 @@ function ConvertTo-FileUrl($path) {
 
 New-Alias -Name cfu -Value ConvertTo-FileUrl
 
-New-Alias -Name chrome -Value F:\PortableApps\PortableApps\GoogleChromePortable\GoogleChromePortable.exe
+New-Alias -Name chrome -Value "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
 
 function Get-VlowGraphAsSvg($baseUrl) {
     $mermaidTxt = Join-Path $env:TEMP graph.txt
