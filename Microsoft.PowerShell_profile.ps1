@@ -42,6 +42,10 @@ function Invoke-Notepad2 {
 }
 New-Alias -Name np2 -Value Invoke-Notepad2
 
+function Invoke-Evince {
+    F:\PortableApps\PortableApps\EvincePortable\EvincePortable.exe $args
+}
+
 function Show-PunchClock {
     ledger.exe -f F:\Dropbox\Personal\journals\timelog --date-format "%Y-%m-%d" --no-color $args
 }
@@ -269,3 +273,11 @@ function Update-DotNetGlobalTools() {
 }
 
 New-Alias -Name udngt Update-DotNetGlobalTools
+
+function Run-DotNetOutdated() {
+    dotnet outdated -u:prompt
+}
+
+New-Alias -Name dnop Run-DotNetOutdated
+
+$env:JULIA_HOME="C:\Users\admin\AppData\Local\Julia-1.2.0\bin"
