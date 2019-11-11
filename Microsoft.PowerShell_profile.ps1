@@ -1,6 +1,8 @@
 if (-not (Test-Path env:INSIDE_EMACS)) {
     # Load posh-git example profile
     Import-Module "C:\tools\poshgit\dahlbyk-posh-git-9bda399\src\posh-git"
+    [System.Environment]::SetEnvironmentVariable("SSH_AUTH_SOCK", $null)
+    [System.Environment]::SetEnvironmentVariable("SSH_AGENT_PID", $null)
     function global:prompt {
         $realLASTEXITCODE = $LASTEXITCODE
 
@@ -11,11 +13,9 @@ if (-not (Test-Path env:INSIDE_EMACS)) {
         $global:LASTEXITCODE = $realLASTEXITCODE
         return "> "
     }
-
-    # Start posh-git's SSH Agent.
-    Set-Alias ssh-agent "C:\Program Files\git\usr\bin\ssh-agent.exe"
-    Set-Alias ssh-add "C:\Program Files\git\usr\bin\ssh-add.exe"
-    Start-SshAgent -Quiet
+    if((ssh-add -l) -match 'no identities') {
+        ssh-add (Join-Path (Join-Path $env:HOME .ssh) id_rsa)
+    }
 }
 
 $HistoryFilePath = Join-Path ([Environment]::GetFolderPath('UserProfile')) .ps_history
