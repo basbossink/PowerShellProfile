@@ -86,7 +86,7 @@ function Format-TimeSpan([TimeSpan] $timeSpan) {
         $timeSpanString += "$hours hours "
     }
     $timeSpanString += "$mins minutes"
-    return $timeSpanString
+    return $timeSpanString + " ($('{0:0.##}' -f $timeSpan.TotalHours) hours)"
 }
 
 function Show-Overtime($end = ((Get-Date) + [TimeSpan]::FromDays(1))) {
